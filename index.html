@@ -225,6 +225,11 @@
         <input type="number" id="longInput" min="1" value="15" />
       </label>
 
+      <label>
+        Long break every
+        <input type="number" id="pomoBeforeLong" min="1" value="4" /> Pomodoros
+      </label>
+
       <hr
         style="margin: 0.8em 0; border: 0; border-top: 1px solid var(--border)"
       />
@@ -277,6 +282,19 @@
       const autoPomosToggle = document.getElementById("autoPomos");
       const soundToggle = document.getElementById("soundToggle");
       const notifyToggle = document.getElementById("notifyToggle");
+
+      const pomoBeforeLongInput = document.getElementById("pomoBeforeLong");
+      let pomoBeforeLong = parseInt(
+        localStorage.getItem("kitty-pomoBeforeLong") || 4
+      );
+
+      pomoBeforeLongInput.value = pomoBeforeLong;
+      pomoBeforeLongInput.onchange = () => {
+        pomoBeforeLong = parseInt(pomoBeforeLongInput.value);
+        localStorage.setItem("kitty-pomoBeforeLong", pomoBeforeLong);
+      };
+
+      let pomoCount = parseInt(localStorage.getItem("kitty-pomoCount") || 0);
 
       let sessionCount = parseInt(localStorage.getItem("kitty-session") || 0);
       let autoStartBreaks = JSON.parse(
@@ -654,18 +672,36 @@
           setTimeout(() => actuallyStart(false), 1000);
         } else {
           // 🐈 normal start
-          if (soundEnabled) sounds.meow.play(); // happy start cue
+          const isBreak = mode === "short" || mode === "long";
+
+          // only meow for work, purr for breaks
+          if (soundEnabled) {
+            if (isBreak) sounds.purr.play();
+            else sounds.meow.play();
+          }
+
           showQuote("normal");
           setTimeout(() => actuallyStart(true), 600);
         }
       }
 
-      function actuallyStart(playStartSound = true) {
-        setKittyState("run");
-        sleepBtn.disabled = true;
+      function isBreakMode() {
+        return mode === "short" || mode === "long";
+      }
 
-        // safety: only play MEOW if allowed
-        if (playStartSound && soundEnabled) sounds.meow.play();
+      function actuallyStart(playStartSound = true) {
+        const isBreak = mode === "short" || mode === "long";
+
+        // 🐾 If it's a break, kitty naps instead of running
+        if (isBreak) {
+          setKittyState("sleep");
+          if (soundEnabled) sounds.purr.play(); // soft purr cue
+        } else {
+          setKittyState("run");
+          if (playStartSound && soundEnabled) sounds.meow.play(); // happy meow cue
+        }
+
+        sleepBtn.disabled = true;
 
         timer = setInterval(() => {
           remaining--;
@@ -674,28 +710,64 @@
           if (remaining <= 0) {
             clearInterval(timer);
             timer = null;
-            if (soundEnabled) {
-              if (mode === "pomodoro") sounds.long.play();
-              else sounds.short.play();
+
+            if (mode === "pomodoro") {
+              pomoCount++;
+              localStorage.setItem("kitty-pomoCount", pomoCount);
+
+              if (pomoCount >= pomoBeforeLong) {
+                mode = "long";
+                pomoCount = 0; // reset counter
+                localStorage.setItem("kitty-pomoCount", pomoCount);
+                if (soundEnabled) sounds.long.play(); // milestone chime
+              } else {
+                mode = "short";
+                if (soundEnabled) sounds.short.play(); // normal break chime
+              }
+            } else {
+              // if we’re ending a break
+              mode = "pomodoro";
+              if (soundEnabled) setTimeout(() => sounds.mrrp.play(), 300);
             }
-            switchMode();
+
+            setMode(mode);
+            remaining = getDuration(mode);
+            updateDisplay();
+
+            // 🐾 bonus: smooth wake after break
+            if (isBreakMode() && autoStartPomodoros) {
+              setTimeout(() => {
+                if (soundEnabled) sounds.mrrp.play();
+                setKittyState("idle");
+              }, 1200);
+            }
           }
         }, 1000);
       }
 
       function stopTimer() {
         if (!timer) return;
+
         clearInterval(timer);
         timer = null;
         sleepBtn.disabled = false;
+
+        // 🐾 Mrrp for manual interruption (regardless of mode)
+        if (soundEnabled) sounds.mrrp.play();
+
         if (!sleeping) setKittyState("idle");
       }
+
       function resetTimer() {
         clearInterval(timer);
         timer = null;
         remaining = getDuration(mode);
         updateDisplay();
         sleepBtn.disabled = false;
+
+        // 🐾 Mrrp on manual reset too
+        if (soundEnabled) sounds.mrrp.play();
+
         if (!sleeping) setKittyState("idle");
       }
 
