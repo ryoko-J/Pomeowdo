@@ -97,7 +97,7 @@
         color: var(--text);
         border: 1px solid var(--border);
         border-radius: 6px;
-        transition: all 0.2s ease;
+        transition: all 0.2s ease, opacity 0.3s ease;
       }
       .btn:hover:not(:disabled) {
         background: #343434;
@@ -684,6 +684,7 @@
           showQuote("normal");
           setTimeout(() => actuallyStart(true), 600);
         }
+        updateButtonStates();
       }
 
       function isBreakMode() {
@@ -730,6 +731,7 @@
               mode = "pomodoro";
               if (soundEnabled) setTimeout(() => sounds.mrrp.play(), 300);
             }
+            updateButtonStates();
 
             setMode(mode);
             remaining = getDuration(mode);
@@ -757,6 +759,7 @@
         if (soundEnabled) sounds.mrrp.play();
 
         if (!sleeping) setKittyState("idle");
+        updateButtonStates();
       }
 
       function resetTimer() {
@@ -770,6 +773,7 @@
         if (soundEnabled) sounds.mrrp.play();
 
         if (!sleeping) setKittyState("idle");
+        updateButtonStates();
       }
 
       function toggleSleep() {
@@ -799,6 +803,27 @@
             kitty.src = g.idle;
             toggleSleepIndicator(false);
           };
+        }
+        updateButtonStates();
+      }
+
+      // --- manage button enable/disable states ---
+      function updateButtonStates() {
+        if (sleeping) {
+          // kitty is asleep — disable stop/reset
+          stopBtn.disabled = true;
+          resetBtn.disabled = true;
+          sleepBtn.disabled = false;
+        } else if (timer) {
+          // timer running — disable sleep
+          stopBtn.disabled = false;
+          resetBtn.disabled = false;
+          sleepBtn.disabled = true;
+        } else {
+          // idle — enable everything
+          stopBtn.disabled = false;
+          resetBtn.disabled = false;
+          sleepBtn.disabled = false;
         }
       }
 
@@ -1044,6 +1069,7 @@
         const affirmEl = document.querySelector(".affirmation");
         affirmEl.textContent = chooseUniqueAffirmation();
       });
+      updateButtonStates();
     </script>
   </body>
 </html>
