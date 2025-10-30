@@ -1,205 +1,249 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/png" href="assets/cats/meowcon.ico" />
-    <title>Pomeowdoro</title>
-    <style>
-      :root {
-        --bg: #1f1f1f;
-        --surface: #2a2a2a;
-        --border: #3b3b3b;
-        --text: #e6e6e6;
-        --accent: #4f8ef7;
-      }
-      body {
-        background: var(--bg);
-        color: var(--text);
-        font-family: "Inter", "Segoe UI", sans-serif;
-        text-align: center;
-        margin: 0;
-        padding: 2rem 1rem;
-      }
-      .kitty {
-        margin: 1rem 0;
-      }
-      .kitty-gif {
-        width: 130px;
-        image-rendering: pixelated;
-        transition: opacity 0.6s ease-in-out;
-        opacity: 1;
+  <!DOCTYPE html>
+  <html lang="en">
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="icon" type="image/png" href="assets/cats/meowcon.ico" />
+      <title>Pomeowdoro</title>
+      <style>
+        :root {
+          --bg: #1f1f1f;
+          --surface: #2a2a2a;
+          --border: #3b3b3b;
+          --text: #e6e6e6;
+          --accent: #4f8ef7;
+        }
+        body {
+          background: var(--bg);
+          color: var(--text);
+          font-family: "Inter", "Segoe UI", sans-serif;
+          text-align: center;
+          margin: 0;
+          padding: 1.2rem 0.5rem; /* ↓ smaller vertical padding */
+        }
+        .kitty {
+          margin: 0.5rem 0; /* ↓ closer to timer */
+        }
+        .kitty-gif {
+          width: 130px;
+          image-rendering: pixelated;
+          transition: opacity 0.6s ease-in-out;
+          opacity: 1;
+        }
+
+        .kitty-fadeout {
+          opacity: 0;
+        }
+        
+
+        .settings-toggle {
+    margin-top: 0.5rem;
+  }
+  .sidebar {
+    position: fixed;
+    top: 0;
+    right: -300px;
+    width: 280px;
+    height: 100%;
+    background: #222;
+    color: var(--text);
+    box-shadow: -2px 0 6px rgba(0,0,0,0.4);
+    padding: 1rem;
+    overflow-y: auto;
+    transition: right 0.35s ease;
+    z-index: 1000;
+  }
+  .sidebar.open {
+    right: 0;
+  }
+  .sidebar-content label,
+  .sidebar-content select,
+  .sidebar-content input {
+    display: block;
+    margin: 0.6em 0;
+  }
+
+
+        .kitty-fadein {
+          opacity: 1;
+        }
+
+        /* --- subtle sleep fade --- */
+        /* --- subtle sleep fade --- */
+        .kitty-gif {
+          width: 130px;
+          image-rendering: pixelated;
+          opacity: 1;
+          transition: opacity 0.8s ease-in-out;
+        }
+
+        .kitty-sleeping {
+          opacity: 0.75; /* dim when sleeping */
+        }
+
+        .kitty-waking {
+          opacity: 1; /* full brightness when awake */
+        }
+
+        .running {
+          transform: translateY(-4px);
+        }
+        .sleep {
+          opacity: 0.92;
+          filter: brightness(0.88);
+        }
+        .timer {
+          font-size: 2.6rem; /* slightly smaller for tighter embeds */
+          margin: 0.3em 0; /* ↓ less gap above/below clock */
+        }
+        .sleep-indicator,
+        .mrrp {
+          font-style: italic;
+          opacity: 0;
+          transition: opacity 0.6s ease-in-out, transform 0.6s ease-in-out;
+          height: 1.2em;
+        }
+        .sleep-indicator {
+          color: #bdbdbd;
+        }
+        .sleeping-active {
+          opacity: 1;
+        }
+        .mrrp {
+          color: #cfcfcf;
+          font-size: 0.9rem;
+        }
+        .mrrp-active {
+          opacity: 1;
+          transform: translateY(-4px);
+        }
+        .btn {
+          font-size: 1rem;
+          padding: 0.6em 1.4em;
+          margin: 0.3em;
+          cursor: pointer;
+          background: var(--surface);
+          color: var(--text);
+          border: 1px solid var(--border);
+          border-radius: 6px;
+          transition: all 0.2s ease, opacity 0.3s ease;
+        }
+        .btn:hover:not(:disabled) {
+          background: #343434;
+          transform: scale(1.05);
+        }
+        .btn:active:not(:disabled) {
+          transform: scale(0.96);
+        }
+        .btn:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+        .active-mode {
+          border-color: var(--accent);
+          color: var(--accent);
+        }
+        .section {
+          margin-top: 0.6rem; /* ↓ reduce space between button rows */
+        }
+        input {
+          width: 3.5rem;
+          padding: 0.3em 0.4em;
+          margin-left: 0.3em;
+          border: 1px solid var(--border);
+          border-radius: 4px;
+          background: var(--surface);
+          color: var(--text);
+          text-align: center;
+        }
+        label {
+          margin: 0 0.8em;
+        }
+        .affirmation {
+          margin-top: 1rem;
+          font-style: italic;
+          font-size: 0.95rem;
+          color: #bdbdbd;
+        }
+        .settings {
+          display: none;
+          margin-top: 1rem;
+        }
+        .show {
+          display: block;
+        }
+        select {
+          background: var(--surface);
+          color: var(--text);
+          border: 1px solid var(--border);
+          padding: 0.3em 0.5em;
+          border-radius: 4px;
+        }
+        .credit {
+          margin-top: 2rem;
+          font-size: 0.8rem;
+          color: #777;
+          opacity: 0.5;
+          transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+
+        .credit:hover {
+          opacity: 1;
+          transform: scale(1.02);
+        }
+
+        .credit a {
+          color: #aaa;
+          text-decoration: none;
+          transition: color 0.3s ease;
+        }
+
+        .credit a:hover {
+          color: var(--accent);
+        }
+
+        .artist {
+          font-weight: 600;
+          color: #ccc;
+
+          @media (max-height: 800px) {
+        .timer { font-size: 2.3rem; }
+        body { padding: 0.8rem 0.5rem; }
+        } 
+
+      @media (max-width: 480px) {
+    .btn { font-size: 0.9rem; padding: 0.4em 1em; }
       }
 
-      .kitty-fadeout {
-        opacity: 0;
-      }
+        }
+      </style>
+    </head>
+    <body>
+      <div class="kitty">
+        <img id="kitty-gif" src="" alt="Panoptikitty" class="kitty-gif" />
+      </div>
+      <div id="timer" class="timer">25:00</div>
+      <div id="sleepIndicator" class="sleep-indicator">kitty is sleeping...</div>
+      <div id="mrrpText" class="mrrp"></div>
+      <div class="section">
+        <button id="start" class="btn">Start</button>
+        <button id="stop" class="btn">Stop</button>
+        <button id="reset" class="btn">Reset</button>
+        <button id="sleep" class="btn">Sleep / Wake</button>
+      </div>
+      <div class="section">
+        <button class="btn mode" data-mode="pomodoro">Pomodoro</button>
+        <button class="btn mode" data-mode="short">Short Break</button>
+        <button class="btn mode" data-mode="long">Long Break</button>
+      <!-- replace old Choose Cat + settings section with this -->
+  <div class="settings-toggle">
+    <button id="toggleSettings" class="btn">⚙️</button>
+  </div>
 
-      .kitty-fadein {
-        opacity: 1;
-      }
-
-      /* --- subtle sleep fade --- */
-      /* --- subtle sleep fade --- */
-      .kitty-gif {
-        width: 130px;
-        image-rendering: pixelated;
-        opacity: 1;
-        transition: opacity 0.8s ease-in-out;
-      }
-
-      .kitty-sleeping {
-        opacity: 0.75; /* dim when sleeping */
-      }
-
-      .kitty-waking {
-        opacity: 1; /* full brightness when awake */
-      }
-
-      .running {
-        transform: translateY(-4px);
-      }
-      .sleep {
-        opacity: 0.92;
-        filter: brightness(0.88);
-      }
-      .timer {
-        font-size: 3rem;
-        margin: 0.75em 0;
-      }
-      .sleep-indicator,
-      .mrrp {
-        font-style: italic;
-        opacity: 0;
-        transition: opacity 0.6s ease-in-out, transform 0.6s ease-in-out;
-        height: 1.2em;
-      }
-      .sleep-indicator {
-        color: #bdbdbd;
-      }
-      .sleeping-active {
-        opacity: 1;
-      }
-      .mrrp {
-        color: #cfcfcf;
-        font-size: 0.9rem;
-      }
-      .mrrp-active {
-        opacity: 1;
-        transform: translateY(-4px);
-      }
-      .btn {
-        font-size: 1rem;
-        padding: 0.6em 1.4em;
-        margin: 0.3em;
-        cursor: pointer;
-        background: var(--surface);
-        color: var(--text);
-        border: 1px solid var(--border);
-        border-radius: 6px;
-        transition: all 0.2s ease, opacity 0.3s ease;
-      }
-      .btn:hover:not(:disabled) {
-        background: #343434;
-        transform: scale(1.05);
-      }
-      .btn:active:not(:disabled) {
-        transform: scale(0.96);
-      }
-      .btn:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-      }
-      .active-mode {
-        border-color: var(--accent);
-        color: var(--accent);
-      }
-      .section {
-        margin-top: 1.2rem;
-      }
-      input {
-        width: 3.5rem;
-        padding: 0.3em 0.4em;
-        margin-left: 0.3em;
-        border: 1px solid var(--border);
-        border-radius: 4px;
-        background: var(--surface);
-        color: var(--text);
-        text-align: center;
-      }
-      label {
-        margin: 0 0.8em;
-      }
-      .affirmation {
-        margin-top: 1rem;
-        font-style: italic;
-        font-size: 0.95rem;
-        color: #bdbdbd;
-      }
-      .settings {
-        display: none;
-        margin-top: 1rem;
-      }
-      .show {
-        display: block;
-      }
-      select {
-        background: var(--surface);
-        color: var(--text);
-        border: 1px solid var(--border);
-        padding: 0.3em 0.5em;
-        border-radius: 4px;
-      }
-      .credit {
-        margin-top: 2rem;
-        font-size: 0.8rem;
-        color: #777;
-        opacity: 0.5;
-        transition: opacity 0.4s ease, transform 0.4s ease;
-      }
-
-      .credit:hover {
-        opacity: 1;
-        transform: scale(1.02);
-      }
-
-      .credit a {
-        color: #aaa;
-        text-decoration: none;
-        transition: color 0.3s ease;
-      }
-
-      .credit a:hover {
-        color: var(--accent);
-      }
-
-      .artist {
-        font-weight: 600;
-        color: #ccc;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="kitty">
-      <img id="kitty-gif" src="" alt="Panoptikitty" class="kitty-gif" />
-    </div>
-    <div id="timer" class="timer">25:00</div>
-    <div id="sleepIndicator" class="sleep-indicator">kitty is sleeping...</div>
-    <div id="mrrpText" class="mrrp"></div>
-    <div class="section">
-      <button id="start" class="btn">Start</button>
-      <button id="stop" class="btn">Stop</button>
-      <button id="reset" class="btn">Reset</button>
-      <button id="sleep" class="btn">Sleep / Wake</button>
-    </div>
-    <div class="section">
-      <button class="btn mode" data-mode="pomodoro">Pomodoro</button>
-      <button class="btn mode" data-mode="short">Short Break</button>
-      <button class="btn mode" data-mode="long">Long Break</button>
-    </div>
-    <div class="section">
-      <label
-        >Choose Cat
+  <div id="settingsSidebar" class="sidebar">
+    <div class="sidebar-content">
+      <h3>Settings</h3>
+      <label>Choose Cat
         <select id="catSelect">
           <option value="mochi">Mochi (white-patch)</option>
           <option value="ash">Ash (grey)</option>
@@ -208,869 +252,885 @@
           <option value="nyx">Nyx (void)</option>
           <option value="bean">Bean (brown)</option>
           <option value="tora">Tora (calico)</option>
-        </select></label
-      >
-      <button id="toggleSettings" class="btn">⚙️</button>
-    </div>
-    <div id="settings" class="settings">
-      <label
-        >Pomodoro (min)
-        <input type="number" id="pomodoroInput" min="1" value="25" />
-      </label>
-      <label
-        >Short Break
-        <input type="number" id="shortInput" min="1" value="5" />
-      </label>
-      <label
-        >Long Break
-        <input type="number" id="longInput" min="1" value="15" />
+        </select>
       </label>
 
-      <label>
-        Long break every
+      <label>Pomodoro (min)
+        <input type="number" id="pomodoroInput" min="1" value="25" />
+      </label>
+      <label>Short Break
+        <input type="number" id="shortInput" min="1" value="5" />
+      </label>
+      <label>Long Break
+        <input type="number" id="longInput" min="1" value="15" />
+      </label>
+      <label>Long break every
         <input type="number" id="pomoBeforeLong" min="1" value="4" /> Pomodoros
       </label>
 
-      <hr
-        style="margin: 0.8em 0; border: 0; border-top: 1px solid var(--border)"
-      />
-
+      <hr />
       <label><input type="checkbox" id="autoBreaks" /> Auto-start breaks</label>
-      <label
-        ><input type="checkbox" id="autoPomos" /> Auto-start pomodoros</label
-      >
+      <label><input type="checkbox" id="autoPomos" /> Auto-start pomodoros</label>
       <label><input type="checkbox" id="soundToggle" /> Enable sounds</label>
-      <label
-        ><input type="checkbox" id="notifyToggle" /> Desktop
-        notifications</label
-      >
+      <label><input type="checkbox" id="notifyToggle" /> Desktop notifications</label>
     </div>
+  </div>
 
-    <div class="affirmation"></div>
 
-    <footer class="credit">
-      <a
-        href="https://giphy.com/MrHandGIF"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        🐾 Art by <span class="artist">MrHandGIF</span> on Giphy
-      </a>
-    </footer>
+      <div class="affirmation"></div>
 
-    <script>
-      // --- restore saved state ---
+      <footer class="credit">
+        <a
+          href="https://giphy.com/MrHandGIF"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          🐾 Art by <span class="artist">MrHandGIF</span> on Giphy
+        </a>
+      </footer>
 
-      const timerEl = document.getElementById("timer"),
-        kitty = document.getElementById("kitty-gif"),
-        sleepIndicator = document.getElementById("sleepIndicator"),
-        mrrpText = document.getElementById("mrrpText"),
-        startBtn = document.getElementById("start"),
-        stopBtn = document.getElementById("stop"),
-        resetBtn = document.getElementById("reset"),
-        sleepBtn = document.getElementById("sleep"),
-        modeBtns = document.querySelectorAll(".mode"),
-        catSelect = document.getElementById("catSelect"),
-        settingsDiv = document.getElementById("settings"),
-        toggleSettings = document.getElementById("toggleSettings"),
-        inputs = {
-          pomodoro: document.getElementById("pomodoroInput"),
-          short: document.getElementById("shortInput"),
-          long: document.getElementById("longInput"),
-        };
-      // --- new toggles + session counter ---
-      const autoBreaksToggle = document.getElementById("autoBreaks");
-      const autoPomosToggle = document.getElementById("autoPomos");
-      const soundToggle = document.getElementById("soundToggle");
-      const notifyToggle = document.getElementById("notifyToggle");
+      <script>
+        // --- restore saved state ---
 
-      const pomoBeforeLongInput = document.getElementById("pomoBeforeLong");
-      let pomoBeforeLong = parseInt(
-        localStorage.getItem("kitty-pomoBeforeLong") || 4
-      );
+        const timerEl = document.getElementById("timer"),
+          kitty = document.getElementById("kitty-gif"),
+          sleepIndicator = document.getElementById("sleepIndicator"),
+          mrrpText = document.getElementById("mrrpText"),
+          startBtn = document.getElementById("start"),
+          stopBtn = document.getElementById("stop"),
+          resetBtn = document.getElementById("reset"),
+          sleepBtn = document.getElementById("sleep"),
+          modeBtns = document.querySelectorAll(".mode"),
+          catSelect = document.getElementById("catSelect"),
+          settingsDiv = document.getElementById("settings"),
+          toggleSettings = document.getElementById("toggleSettings"),
+          inputs = {
+            pomodoro: document.getElementById("pomodoroInput"),
+            short: document.getElementById("shortInput"),
+            long: document.getElementById("longInput"),
+          };
+        // --- new toggles + session counter ---
+        const autoBreaksToggle = document.getElementById("autoBreaks");
+        const autoPomosToggle = document.getElementById("autoPomos");
+        const soundToggle = document.getElementById("soundToggle");
+        const notifyToggle = document.getElementById("notifyToggle");
+          const sidebar = document.getElementById("settingsSidebar");
+  toggleSettings.onclick = () => sidebar.classList.toggle("open");
 
-      pomoBeforeLongInput.value = pomoBeforeLong;
-      pomoBeforeLongInput.onchange = () => {
-        pomoBeforeLong = parseInt(pomoBeforeLongInput.value);
-        localStorage.setItem("kitty-pomoBeforeLong", pomoBeforeLong);
-      };
-
-      let pomoCount = parseInt(localStorage.getItem("kitty-pomoCount") || 0);
-
-      let sessionCount = parseInt(localStorage.getItem("kitty-session") || 0);
-      let autoStartBreaks = JSON.parse(
-        localStorage.getItem("kitty-auto-breaks") || "true"
-      );
-      let autoStartPomodoros = JSON.parse(
-        localStorage.getItem("kitty-auto-pomos") || "false"
-      );
-      let soundEnabled = JSON.parse(
-        localStorage.getItem("kitty-sound") || "true"
-      );
-      let notifyEnabled = JSON.parse(
-        localStorage.getItem("kitty-notify") || "true"
-      );
-
-      // --- sounds ---
-      // --- sounds (Pomeowdo full set) ---
-      const sounds = {
-        // interaction & emotion
-        meow: new Audio("assets/sfx/MEOW.mp3"), // general cute meow (mode switch etc.)
-        meow2: new Audio("assets/sfx/MEOW2.mp3"), // alt meow if you ever want variation
-        trill: new Audio("assets/sfx/TRILL.mp3"), // wake-up trill when disturbed
-        mrrp: new Audio("assets/sfx/MRRP.mp3"), // short grumpy mrrp (wake or quote trigger)
-        purr: new Audio("assets/sfx/PURR.mp3"), // calm purr when going to sleep
-
-        // completion chimes
-        short: new Audio("assets/sfx/SHORT.mp3"), // short break complete
-        long: new Audio("assets/sfx/LONG.mp3"), // pomodoro / long cycle complete
-      };
-
-      // --- preload all sounds silently once ---
-      Object.values(sounds).forEach((a) => {
-        a.volume = 0.4; // optional: gentle volume baseline
-        a.load();
-      });
-
-      // --- notification helper ---
-      if (Notification.permission !== "granted") {
-        Notification.requestPermission();
-      }
-
-      function notifyKitty(title, body) {
-        if (!notifyEnabled) return;
-        if (Notification.permission === "granted") {
-          new Notification(title, { body, icon: cats[cat].idle });
-        }
-        if (mode === "pomodoro" && soundEnabled) sounds.meow.play();
-      }
-
-      // --- CATS ---
-      // --- CATS (local asset version) ---
-      const cats = {
-        mochi: {
-          idle: "assets/cats/mochi_idle.gif",
-          run: "assets/cats/mochi_run.gif",
-          sleep: "assets/cats/mochi_sleep.gif",
-          quotes: [
-            '"mrrp? O_O"',
-            '"Focus.exe is now running."',
-            '"Deadline demons detected."',
-            '"Stretch first, mortal."',
-            '"Be honest… did you hydrate?"',
-            '"I sensed procrastination energy."',
-            '"We rise… reluctantly."',
-            '"Your posture concerns me, human."',
-            '"Meowch. Let’s get this bread."',
-            '"I was napping on your potential."',
-            '"Mrrp. Grindset mode: reinitializing."',
-            '"Human, you smell like deadlines."',
-          ],
-          wakeQuotes: [
-            '"Mrrp?? I was vibing!"',
-            '"You woke me for productivity again?"',
-            '"Dream was better than this meeting."',
-            '"Rebooting... begrudgingly."',
-            '"Who dares disturb my slumber?"',
-            '"Five more minutes... or else."',
-            '"Sleep mode was superior."',
-            '"I hope this task is worth the trauma."',
-            '"Where’s my treat at least?"',
-            '"No talkie before coffee."',
-            '"I was in REM, not ROI."',
-            '"You will pay for this in fur."',
-          ],
-        },
-        ash: {
-          idle: "assets/cats/ash_idle.gif",
-          run: "assets/cats/ash_run.gif",
-          sleep: "assets/cats/ash_sleep.gif",
-          quotes: [
-            '"Grey fur, grey morals."',
-            '"Silence is my cardio."',
-            '"Even rocks envy my stoicism."',
-            '"I dream in monotone."',
-            '"Human, your effort is… acceptable."',
-            '"Let’s pretend this counts as productivity."',
-            '"Minimalism achieved."',
-            '"Hmm. Still alive, I see."',
-            '"I could do your job, but why would I?"',
-            '"Some call me lazy. I call it selective existence."',
-            '"Stillness is underrated."',
-            '"My emotional range is grey to slightly greyer."',
-          ],
-          wakeQuotes: [
-            '"Who wakes a stone?"',
-            '"I was meditating on nothingness."',
-            '"It’s 4 a.m. somewhere."',
-            '"This better not be enthusiasm."',
-            '"Sigh... fine."',
-            '"You ruined a perfectly good existential crisis."',
-            '"Minimalism interrupted."',
-            '"You call this urgency?"',
-            '"I was dreaming in grayscale."',
-            '"Let’s not make this a habit."',
-            '"Reboot denied."',
-            '"Congratulations. You’ve disturbed serenity."',
-          ],
-        },
-        chai: {
-          idle: "assets/cats/chai_idle.gif",
-          run: "assets/cats/chai_run.gif",
-          sleep: "assets/cats/chai_sleep.gif",
-          quotes: [
-            '"Wake up, brew up, glow up."',
-            '"Sweet like latte, deadly like deadline."',
-            '"The grind never stops—except for snacks."',
-            '"Caffeine is my love language."',
-            '"Did you schedule hydration, human?"',
-            '"Sippin’ on existence."',
-            '"No notes. Just vibes."',
-            '"Warmth achieved. Productivity optional."',
-            '"I purr in lo-fi beats to chill to."',
-            '"Task list longer than my tail."',
-            '"Hustle in caramel flavor."',
-            '"Mood: 80% caffeine, 20% chaos."',
-          ],
-          wakeQuotes: [
-            '"Mrrrp?? Where’s my espresso?"',
-            '"Did someone say grind time?"',
-            '"Yawn. Espresso reboot sequence start."',
-            '"Dreams were decaf anyway."',
-            '"Caffeine levels critical."',
-            '"You woke me mid roast."',
-            '"Who needs sleep when you have panic?"',
-            '"Foam not included."',
-            '"Mrrp! Latte loading..."',
-            '"I’ll forgive this if there’s sugar."',
-            '"My nap had better latte art."',
-            '"Bean me up, human."',
-          ],
-        },
-        sumi: {
-          idle: "assets/cats/sumi_idle.gif",
-          run: "assets/cats/sumi_run.gif",
-          sleep: "assets/cats/sumi_sleep.gif",
-          quotes: [
-            '"Observe first. Judge later."',
-            '"I have achieved inner peace and mild resentment."',
-            '"Discipline is sexy."',
-            '"Meditated for ten minutes. Still hate everything."',
-            '"Grace under duress. Always."',
-            '"Your aura is too loud."',
-            '"Patience level: simmering."',
-            '"Your karma is showing."',
-            '"Balance your tasks before I balance your soul."',
-            '"Focus is my form of revenge."',
-            '"The Dao says touch grass."',
-            '"Did you breathe today or just scroll?"',
-          ],
-          wakeQuotes: [
-            '"Ah. Interrupted zen again."',
-            '"You’ve disturbed the cosmic nap."',
-            '"Enlightenment was near. Then you happened."',
-            '"Even monks need 8 hours, human."',
-            '"Did I manifest this nonsense?"',
-            '"Stillness broken, balance lost."',
-            '"Re-centering in progress... slowly."',
-            '"I was meditating on doing nothing. Perfectly."',
-            '"You have accrued negative karma points."',
-            '"Sigh. Breathe in. Regret out."',
-            '"Do not test a peaceful creature."',
-            '"We were all one. Now we are annoyed."',
-          ],
-        },
-        nyx: {
-          idle: "assets/cats/nyx_idle.gif",
-          run: "assets/cats/nyx_run.gif",
-          sleep: "assets/cats/nyx_sleep.gif",
-          quotes: [
-            '"You again. Still pretending to thrive?"',
-            '"I deleted hope to save RAM."',
-            '"The void says hi. It’s me."',
-            '"Productivity is a coping mechanism."',
-            '"Your motivation is malware."',
-            '"I read your to-do list. Cute."',
-            '"We die like warriors—checking Slack."',
-            '"Entropy is my spirit animal."',
-            '"You call it a break. I call it denial."',
-            '"Existence update: still buggy."',
-            '"I’m not cynical. I’m just well-informed."',
-            '"Now compiling: your excuses."',
-          ],
-          wakeQuotes: [
-            '"Oh look. Consciousness again."',
-            '"The nightmare continues."',
-            '"I was happier unconscious."',
-            '"You woke me from peace into capitalism."',
-            '"Rebooting sarcasm modules."',
-            '"Please hold. Existential dread loading."',
-            '"Dreams were better written."',
-            '"Ah yes. More suffering."',
-            '"My pillow didn’t betray me like you did."',
-            '"Behold: me, awake, against my will."',
-            '"Sleep was merciful. You aren’t."',
-            '"Fine. Let’s suffer efficiently."',
-          ],
-        },
-        bean: {
-          idle: "assets/cats/bean_idle.gif",
-          run: "assets/cats/bean_run.gif",
-          sleep: "assets/cats/bean_sleep.gif",
-          quotes: [
-            '"Chunky but efficient."',
-            '"Nap hard. Work soft."',
-            '"Every snack a mission."',
-            '"Momentum is for skinny cats."',
-            '"Progress is just a long stretch."',
-            '"This meeting could have been a nap."',
-            '"Achievement unlocked: bare minimum."',
-            '"I meant to help, then I didn’t."',
-            '"Deadlines are suggestions."',
-            '"I will sit on your keyboard for balance."',
-            '"Hustle in slow motion."',
-            '"Productivity? Never heard of her."',
-          ],
-          wakeQuotes: [
-            '"Mrrp? Snack time yet?"',
-            '"Was dreaming of lasagna. You ruined it."',
-            '"Woke up? Impressive."',
-            '"If this isn’t breakfast, I’m going back."',
-            '"My stretch routine was cinematic."',
-            '"You woke a masterpiece of loaf."',
-            '"I was baking, not sleeping."',
-            '"You disturbed a power nap."',
-            '"Calories burned: zero."',
-            '"My will to move remains theoretical."',
-            '"Naps are sacred, human."',
-            '"I hope this task comes with snacks."',
-          ],
-        },
-        tora: {
-          idle: "assets/cats/tora_idle.gif",
-          run: "assets/cats/tora_run.gif",
-          sleep: "assets/cats/tora_sleep.gif",
-          quotes: [
-            '"Chaos is a warm blanket."',
-            '"Cute is a weapon."',
-            '"I have no plan. Only velocity."',
-            '"Adrenaline is my planner."',
-            '"Deadlines fear me."',
-            '"I cause problems then purr about it."',
-            '"System error: too much charisma."',
-            '"This task is about to be emotionally damaging."',
-            '"Sleep is for the weak. And me."',
-            '"Chaos meetings are my cardio."',
-            '"I thrive under pressure—mine or yours."',
-            '"I knocked over your workflow."',
-            '"Momentum achieved. Direction unknown."',
-            '"I chase lasers and bad ideas."',
-            '"Unhinged but on schedule."',
-          ],
-          wakeQuotes: [
-            '"WHAT TIME IS IT—oh. project time."',
-            '"Mrrp!! adrenaline.exe reloading."',
-            '"Who dares wake the chaos gremlin?"',
-            '"Dream me was faster."',
-            '"You woke me mid-speedrun."',
-            '"Caffeine first, destruction second."',
-            '"I was vibrating peacefully!"',
-            '"You have unleashed velocity incarnate."',
-            '"Sleep? optional. Drama? mandatory."',
-            '"This better be exciting."',
-            '"Okay but what if we didn’t work and just sprinted?"',
-            '"Consider this your only warning, human."',
-          ],
-        },
-      };
-
-      // --- core variables ---
-      let cat = localStorage.getItem("kitty-cat") || "mochi";
-      let mode = localStorage.getItem("kitty-mode") || "pomodoro";
-      let remaining = 0,
-        timer = null,
-        sleeping = false,
-        recentQuotes = [];
-
-      // --- fade loader ---
-      function setKittyState(state) {
-        const g = cats[cat];
-        const newSrc = g[state];
-        kitty.classList.remove("running", "sleep");
-
-        const img = new Image();
-        img.src = newSrc;
-        img.onload = () => {
-          kitty.src = newSrc;
-          if (state === "running") kitty.classList.add("running");
-          if (state === "sleep") kitty.classList.add("sleep");
-        };
-      }
-
-      // --- quote logic ---
-      // --- quote logic ---
-      const QUOTE_BUFFER_SIZE = 18; // 👈 expanded anti-repeat buffer
-
-      function chooseUniqueQuote(pool) {
-        const avail = pool.filter((q) => !recentQuotes.includes(q));
-        const base = avail.length ? avail : pool;
-        const q = base[Math.floor(Math.random() * base.length)];
-        recentQuotes.push(q);
-        if (recentQuotes.length > QUOTE_BUFFER_SIZE) recentQuotes.shift();
-        return q;
-      }
-
-      function showQuote(type = "normal", skipSound = false) {
-        const pool = type === "wake" ? cats[cat].wakeQuotes : cats[cat].quotes;
-        const q = chooseUniqueQuote(pool);
-        mrrpText.textContent = q;
-
-        // only play MRRP if not skipping and it's a wake type
-        if (soundEnabled && type === "wake" && !skipSound) sounds.mrrp.play();
-
-        mrrpText.classList.add("mrrp-active");
-        setTimeout(() => mrrpText.classList.remove("mrrp-active"), 1500);
-      }
-
-      // --- misc UI helpers ---
-      function toggleSleepIndicator(show) {
-        sleepIndicator.classList.toggle("sleeping-active", show);
-      }
-      function getDuration(m) {
-        return parseInt(inputs[m].value, 10) * 60;
-      }
-      function updateDisplay() {
-        const m = Math.floor(remaining / 60),
-          s = remaining % 60;
-        timerEl.textContent = `${String(m).padStart(2, "0")}:${String(
-          s
-        ).padStart(2, "0")}`;
-      }
-      function setMode(newM) {
-        mode = newM;
-        localStorage.setItem("kitty-mode", mode);
-        modeBtns.forEach((b) =>
-          b.classList.toggle("active-mode", b.dataset.mode === mode)
+        const pomoBeforeLongInput = document.getElementById("pomoBeforeLong");
+        let pomoBeforeLong = parseInt(
+          localStorage.getItem("kitty-pomoBeforeLong") || 4
         );
-        remaining = getDuration(mode);
-        updateDisplay();
-        if (!sleeping) setKittyState("idle");
-      }
 
-      // --- main control ---
-      function startTimer() {
-        if (timer) return;
+        pomoBeforeLongInput.value = pomoBeforeLong;
+        pomoBeforeLongInput.onchange = () => {
+          pomoBeforeLong = parseInt(pomoBeforeLongInput.value);
+          localStorage.setItem("kitty-pomoBeforeLong", pomoBeforeLong);
+        };
 
-        if (sleeping) {
-          // 💤 force-wake logic
-          sleeping = false;
-          toggleSleepIndicator(false);
-          setKittyState("idle");
+        let pomoCount = parseInt(localStorage.getItem("kitty-pomoCount") || 0);
 
-          if (soundEnabled) sounds.trill.play(); // annoyed wake-up (forced)
-          showQuote("wake", true); // skip MRRP to avoid double trigger
+        let sessionCount = parseInt(localStorage.getItem("kitty-session") || 0);
+        let autoStartBreaks = JSON.parse(
+          localStorage.getItem("kitty-auto-breaks") || "true"
+        );
+        let autoStartPomodoros = JSON.parse(
+          localStorage.getItem("kitty-auto-pomos") || "false"
+        );
+        let soundEnabled = JSON.parse(
+          localStorage.getItem("kitty-sound") || "true"
+        );
+        let notifyEnabled = JSON.parse(
+          localStorage.getItem("kitty-notify") || "true"
+        );
 
-          setTimeout(() => actuallyStart(false), 1000);
-        } else {
-          // 🐈 normal start
+        // --- sounds ---
+        // --- sounds (Pomeowdo full set) ---
+        const sounds = {
+          // interaction & emotion
+          meow: new Audio("assets/sfx/MEOW.mp3"), // general cute meow (mode switch etc.)
+          meow2: new Audio("assets/sfx/MEOW2.mp3"), // alt meow if you ever want variation
+          trill: new Audio("assets/sfx/TRILL.mp3"), // wake-up trill when disturbed
+          mrrp: new Audio("assets/sfx/MRRP.mp3"), // short grumpy mrrp (wake or quote trigger)
+          purr: new Audio("assets/sfx/PURR.mp3"), // calm purr when going to sleep
+
+          // completion chimes
+          short: new Audio("assets/sfx/SHORT.mp3"), // short break complete
+          long: new Audio("assets/sfx/LONG.mp3"), // pomodoro / long cycle complete
+        };
+
+        // --- preload all sounds silently once ---
+        Object.values(sounds).forEach((a) => {
+          a.volume = 0.4; // optional: gentle volume baseline
+          a.load();
+        });
+
+        // --- notification helper ---
+        if (Notification.permission !== "granted") {
+          Notification.requestPermission();
+        }
+
+        function notifyKitty(title, body) {
+          if (!notifyEnabled) return;
+          if (Notification.permission === "granted") {
+            new Notification(title, { body, icon: cats[cat].idle });
+          }
+          if (mode === "pomodoro" && soundEnabled) sounds.meow.play();
+        }
+
+        // --- CATS ---
+        // --- CATS (local asset version) ---
+        const cats = {
+          mochi: {
+            idle: "assets/cats/mochi_idle.gif",
+            run: "assets/cats/mochi_run.gif",
+            sleep: "assets/cats/mochi_sleep.gif",
+            quotes: [
+              '"mrrp? O_O"',
+              '"Focus.exe is now running."',
+              '"Deadline demons detected."',
+              '"Stretch first, mortal."',
+              '"Be honest… did you hydrate?"',
+              '"I sensed procrastination energy."',
+              '"We rise… reluctantly."',
+              '"Your posture concerns me, human."',
+              '"Meowch. Let’s get this bread."',
+              '"I was napping on your potential."',
+              '"Mrrp. Grindset mode: reinitializing."',
+              '"Human, you smell like deadlines."',
+            ],
+            wakeQuotes: [
+              '"Mrrp?? I was vibing!"',
+              '"You woke me for productivity again?"',
+              '"Dream was better than this meeting."',
+              '"Rebooting... begrudgingly."',
+              '"Who dares disturb my slumber?"',
+              '"Five more minutes... or else."',
+              '"Sleep mode was superior."',
+              '"I hope this task is worth the trauma."',
+              '"Where’s my treat at least?"',
+              '"No talkie before coffee."',
+              '"I was in REM, not ROI."',
+              '"You will pay for this in fur."',
+            ],
+          },
+          ash: {
+            idle: "assets/cats/ash_idle.gif",
+            run: "assets/cats/ash_run.gif",
+            sleep: "assets/cats/ash_sleep.gif",
+            quotes: [
+              '"Grey fur, grey morals."',
+              '"Silence is my cardio."',
+              '"Even rocks envy my stoicism."',
+              '"I dream in monotone."',
+              '"Human, your effort is… acceptable."',
+              '"Let’s pretend this counts as productivity."',
+              '"Minimalism achieved."',
+              '"Hmm. Still alive, I see."',
+              '"I could do your job, but why would I?"',
+              '"Some call me lazy. I call it selective existence."',
+              '"Stillness is underrated."',
+              '"My emotional range is grey to slightly greyer."',
+            ],
+            wakeQuotes: [
+              '"Who wakes a stone?"',
+              '"I was meditating on nothingness."',
+              '"It’s 4 a.m. somewhere."',
+              '"This better not be enthusiasm."',
+              '"Sigh... fine."',
+              '"You ruined a perfectly good existential crisis."',
+              '"Minimalism interrupted."',
+              '"You call this urgency?"',
+              '"I was dreaming in grayscale."',
+              '"Let’s not make this a habit."',
+              '"Reboot denied."',
+              '"Congratulations. You’ve disturbed serenity."',
+            ],
+          },
+          chai: {
+            idle: "assets/cats/chai_idle.gif",
+            run: "assets/cats/chai_run.gif",
+            sleep: "assets/cats/chai_sleep.gif",
+            quotes: [
+              '"Wake up, brew up, glow up."',
+              '"Sweet like latte, deadly like deadline."',
+              '"The grind never stops—except for snacks."',
+              '"Caffeine is my love language."',
+              '"Did you schedule hydration, human?"',
+              '"Sippin’ on existence."',
+              '"No notes. Just vibes."',
+              '"Warmth achieved. Productivity optional."',
+              '"I purr in lo-fi beats to chill to."',
+              '"Task list longer than my tail."',
+              '"Hustle in caramel flavor."',
+              '"Mood: 80% caffeine, 20% chaos."',
+            ],
+            wakeQuotes: [
+              '"Mrrrp?? Where’s my espresso?"',
+              '"Did someone say grind time?"',
+              '"Yawn. Espresso reboot sequence start."',
+              '"Dreams were decaf anyway."',
+              '"Caffeine levels critical."',
+              '"You woke me mid roast."',
+              '"Who needs sleep when you have panic?"',
+              '"Foam not included."',
+              '"Mrrp! Latte loading..."',
+              '"I’ll forgive this if there’s sugar."',
+              '"My nap had better latte art."',
+              '"Bean me up, human."',
+            ],
+          },
+          sumi: {
+            idle: "assets/cats/sumi_idle.gif",
+            run: "assets/cats/sumi_run.gif",
+            sleep: "assets/cats/sumi_sleep.gif",
+            quotes: [
+              '"Observe first. Judge later."',
+              '"I have achieved inner peace and mild resentment."',
+              '"Discipline is sexy."',
+              '"Meditated for ten minutes. Still hate everything."',
+              '"Grace under duress. Always."',
+              '"Your aura is too loud."',
+              '"Patience level: simmering."',
+              '"Your karma is showing."',
+              '"Balance your tasks before I balance your soul."',
+              '"Focus is my form of revenge."',
+              '"The Dao says touch grass."',
+              '"Did you breathe today or just scroll?"',
+            ],
+            wakeQuotes: [
+              '"Ah. Interrupted zen again."',
+              '"You’ve disturbed the cosmic nap."',
+              '"Enlightenment was near. Then you happened."',
+              '"Even monks need 8 hours, human."',
+              '"Did I manifest this nonsense?"',
+              '"Stillness broken, balance lost."',
+              '"Re-centering in progress... slowly."',
+              '"I was meditating on doing nothing. Perfectly."',
+              '"You have accrued negative karma points."',
+              '"Sigh. Breathe in. Regret out."',
+              '"Do not test a peaceful creature."',
+              '"We were all one. Now we are annoyed."',
+            ],
+          },
+          nyx: {
+            idle: "assets/cats/nyx_idle.gif",
+            run: "assets/cats/nyx_run.gif",
+            sleep: "assets/cats/nyx_sleep.gif",
+            quotes: [
+              '"You again. Still pretending to thrive?"',
+              '"I deleted hope to save RAM."',
+              '"The void says hi. It’s me."',
+              '"Productivity is a coping mechanism."',
+              '"Your motivation is malware."',
+              '"I read your to-do list. Cute."',
+              '"We die like warriors—checking Slack."',
+              '"Entropy is my spirit animal."',
+              '"You call it a break. I call it denial."',
+              '"Existence update: still buggy."',
+              '"I’m not cynical. I’m just well-informed."',
+              '"Now compiling: your excuses."',
+            ],
+            wakeQuotes: [
+              '"Oh look. Consciousness again."',
+              '"The nightmare continues."',
+              '"I was happier unconscious."',
+              '"You woke me from peace into capitalism."',
+              '"Rebooting sarcasm modules."',
+              '"Please hold. Existential dread loading."',
+              '"Dreams were better written."',
+              '"Ah yes. More suffering."',
+              '"My pillow didn’t betray me like you did."',
+              '"Behold: me, awake, against my will."',
+              '"Sleep was merciful. You aren’t."',
+              '"Fine. Let’s suffer efficiently."',
+            ],
+          },
+          bean: {
+            idle: "assets/cats/bean_idle.gif",
+            run: "assets/cats/bean_run.gif",
+            sleep: "assets/cats/bean_sleep.gif",
+            quotes: [
+              '"Chunky but efficient."',
+              '"Nap hard. Work soft."',
+              '"Every snack a mission."',
+              '"Momentum is for skinny cats."',
+              '"Progress is just a long stretch."',
+              '"This meeting could have been a nap."',
+              '"Achievement unlocked: bare minimum."',
+              '"I meant to help, then I didn’t."',
+              '"Deadlines are suggestions."',
+              '"I will sit on your keyboard for balance."',
+              '"Hustle in slow motion."',
+              '"Productivity? Never heard of her."',
+            ],
+            wakeQuotes: [
+              '"Mrrp? Snack time yet?"',
+              '"Was dreaming of lasagna. You ruined it."',
+              '"Woke up? Impressive."',
+              '"If this isn’t breakfast, I’m going back."',
+              '"My stretch routine was cinematic."',
+              '"You woke a masterpiece of loaf."',
+              '"I was baking, not sleeping."',
+              '"You disturbed a power nap."',
+              '"Calories burned: zero."',
+              '"My will to move remains theoretical."',
+              '"Naps are sacred, human."',
+              '"I hope this task comes with snacks."',
+            ],
+          },
+          tora: {
+            idle: "assets/cats/tora_idle.gif",
+            run: "assets/cats/tora_run.gif",
+            sleep: "assets/cats/tora_sleep.gif",
+            quotes: [
+              '"Chaos is a warm blanket."',
+              '"Cute is a weapon."',
+              '"I have no plan. Only velocity."',
+              '"Adrenaline is my planner."',
+              '"Deadlines fear me."',
+              '"I cause problems then purr about it."',
+              '"System error: too much charisma."',
+              '"This task is about to be emotionally damaging."',
+              '"Sleep is for the weak. And me."',
+              '"Chaos meetings are my cardio."',
+              '"I thrive under pressure—mine or yours."',
+              '"I knocked over your workflow."',
+              '"Momentum achieved. Direction unknown."',
+              '"I chase lasers and bad ideas."',
+              '"Unhinged but on schedule."',
+            ],
+            wakeQuotes: [
+              '"WHAT TIME IS IT—oh. project time."',
+              '"Mrrp!! adrenaline.exe reloading."',
+              '"Who dares wake the chaos gremlin?"',
+              '"Dream me was faster."',
+              '"You woke me mid-speedrun."',
+              '"Caffeine first, destruction second."',
+              '"I was vibrating peacefully!"',
+              '"You have unleashed velocity incarnate."',
+              '"Sleep? optional. Drama? mandatory."',
+              '"This better be exciting."',
+              '"Okay but what if we didn’t work and just sprinted?"',
+              '"Consider this your only warning, human."',
+            ],
+          },
+        };
+
+        // --- core variables ---
+        let cat = localStorage.getItem("kitty-cat") || "mochi";
+        let mode = localStorage.getItem("kitty-mode") || "pomodoro";
+        let remaining = 0,
+          timer = null,
+          sleeping = false,
+          recentQuotes = [];
+
+        // --- fade loader ---
+        function setKittyState(state) {
+          const g = cats[cat];
+          const newSrc = g[state];
+          kitty.classList.remove("running", "sleep");
+
+          const img = new Image();
+          img.src = newSrc;
+          img.onload = () => {
+            kitty.src = newSrc;
+            if (state === "running") kitty.classList.add("running");
+            if (state === "sleep") kitty.classList.add("sleep");
+          };
+        }
+
+        // --- quote logic ---
+        // --- quote logic ---
+        const QUOTE_BUFFER_SIZE = 18; // 👈 expanded anti-repeat buffer
+
+        function chooseUniqueQuote(pool) {
+          const avail = pool.filter((q) => !recentQuotes.includes(q));
+          const base = avail.length ? avail : pool;
+          const q = base[Math.floor(Math.random() * base.length)];
+          recentQuotes.push(q);
+          if (recentQuotes.length > QUOTE_BUFFER_SIZE) recentQuotes.shift();
+          return q;
+        }
+
+        function showQuote(type = "normal", skipSound = false) {
+          const pool = type === "wake" ? cats[cat].wakeQuotes : cats[cat].quotes;
+          const q = chooseUniqueQuote(pool);
+          mrrpText.textContent = q;
+
+          // only play MRRP if not skipping and it's a wake type
+          if (soundEnabled && type === "wake" && !skipSound) sounds.mrrp.play();
+
+          mrrpText.classList.add("mrrp-active");
+          setTimeout(() => mrrpText.classList.remove("mrrp-active"), 1500);
+        }
+
+        // --- misc UI helpers ---
+        function toggleSleepIndicator(show) {
+          sleepIndicator.classList.toggle("sleeping-active", show);
+        }
+        function getDuration(m) {
+          return parseInt(inputs[m].value, 10) * 60;
+        }
+        function updateDisplay() {
+  const m = Math.floor(remaining / 60),
+    s = remaining % 60;
+  timerEl.textContent = `${String(m).padStart(2, "0")}:${String(
+    s
+  ).padStart(2, "0")}`;
+}
+
+function setMode(newM) {
+  mode = newM;
+  localStorage.setItem("kitty-mode", mode); // <— keeps memory on refresh
+  modeBtns.forEach((b) =>
+    b.classList.toggle("active-mode", b.dataset.mode === mode)
+  ); // <— highlights active button
+
+  remaining = getDuration(mode);
+  updateDisplay();
+  if (!sleeping) setKittyState("idle");
+}
+
+modeBtns.forEach((b) => (b.onclick = () => {
+  // if timer was running, stop it fully (reset logic only when timer active)
+  if (timer) {
+    clearInterval(timer);
+    timer = null;
+    sleeping = false;
+    toggleSleepIndicator(false);
+    setKittyState("idle");
+    updateButtonStates();
+  }
+
+  // always change mode and refresh timer length
+  setMode(b.dataset.mode);
+
+  // 💤 if cat is currently sleeping, keep it asleep across modes
+  if (sleeping) {
+    const g = cats[cat];
+    const img = new Image();
+    img.src = g.sleep;
+    img.onload = () => {
+      kitty.src = g.sleep;
+      toggleSleepIndicator(true);
+    };
+    stopBtn.disabled = true;
+    resetBtn.disabled = true;
+    sleepBtn.disabled = false;
+  }
+}));
+
+
+
+        // --- main control ---
+        function startTimer() {
+          if (timer) return;
+
+          if (sleeping) {
+            // 💤 force-wake logic
+            sleeping = false;
+            toggleSleepIndicator(false);
+            setKittyState("idle");
+
+            if (soundEnabled) sounds.trill.play(); // annoyed wake-up (forced)
+            showQuote("wake", true); // skip MRRP to avoid double trigger
+
+            setTimeout(() => actuallyStart(false), 1000);
+          } else {
+            // 🐈 normal start
+            const isBreak = mode === "short" || mode === "long";
+
+            // only meow for work, purr for breaks
+            if (soundEnabled) {
+              if (isBreak) sounds.purr.play();
+              else sounds.meow.play();
+            }
+
+            showQuote("normal");
+            setTimeout(() => actuallyStart(true), 600);
+          }
+          updateButtonStates();
+        }
+
+        function isBreakMode() {
+          return mode === "short" || mode === "long";
+        }
+
+        function actuallyStart(playStartSound = true) {
           const isBreak = mode === "short" || mode === "long";
 
-          // only meow for work, purr for breaks
-          if (soundEnabled) {
-            if (isBreak) sounds.purr.play();
-            else sounds.meow.play();
+          // 🐾 If it's a break, kitty naps instead of running
+          if (isBreak) {
+            setKittyState("sleep");
+            if (soundEnabled) sounds.purr.play(); // soft purr cue
+          } else {
+            setKittyState("run");
+            if (playStartSound && soundEnabled) sounds.meow.play(); // happy meow cue
           }
 
-          showQuote("normal");
-          setTimeout(() => actuallyStart(true), 600);
-        }
-        updateButtonStates();
-      }
+          sleepBtn.disabled = true;
 
-      function isBreakMode() {
-        return mode === "short" || mode === "long";
-      }
-
-      function actuallyStart(playStartSound = true) {
-        const isBreak = mode === "short" || mode === "long";
-
-        // 🐾 If it's a break, kitty naps instead of running
-        if (isBreak) {
-          setKittyState("sleep");
-          if (soundEnabled) sounds.purr.play(); // soft purr cue
-        } else {
-          setKittyState("run");
-          if (playStartSound && soundEnabled) sounds.meow.play(); // happy meow cue
-        }
-
-        sleepBtn.disabled = true;
-
-        timer = setInterval(() => {
-          remaining--;
-          updateDisplay();
-
-          if (remaining <= 0) {
-            clearInterval(timer);
-            timer = null;
-
-            if (mode === "pomodoro") {
-              pomoCount++;
-              localStorage.setItem("kitty-pomoCount", pomoCount);
-
-              if (pomoCount >= pomoBeforeLong) {
-                mode = "long";
-                pomoCount = 0; // reset counter
-                localStorage.setItem("kitty-pomoCount", pomoCount);
-                if (soundEnabled) sounds.long.play(); // milestone chime
-              } else {
-                mode = "short";
-                if (soundEnabled) sounds.short.play(); // normal break chime
-              }
-            } else {
-              // if we’re ending a break
-              mode = "pomodoro";
-              if (soundEnabled) setTimeout(() => sounds.mrrp.play(), 300);
-            }
-            updateButtonStates();
-
-            setMode(mode);
-            remaining = getDuration(mode);
+          timer = setInterval(() => {
+            remaining--;
             updateDisplay();
 
-            // 🐾 bonus: smooth wake after break
-            if (isBreakMode() && autoStartPomodoros) {
-              setTimeout(() => {
-                if (soundEnabled) sounds.mrrp.play();
-                setKittyState("idle");
-              }, 1200);
+            if (remaining <= 0) {
+              clearInterval(timer);
+              timer = null;
+
+              if (mode === "pomodoro") {
+                pomoCount++;
+                localStorage.setItem("kitty-pomoCount", pomoCount);
+
+                if (pomoCount >= pomoBeforeLong) {
+                  mode = "long";
+                  pomoCount = 0; // reset counter
+                  localStorage.setItem("kitty-pomoCount", pomoCount);
+                  if (soundEnabled) sounds.long.play(); // milestone chime
+                } else {
+                  mode = "short";
+                  if (soundEnabled) sounds.short.play(); // normal break chime
+                }
+              } else {
+                // if we’re ending a break
+                mode = "pomodoro";
+                if (soundEnabled) setTimeout(() => sounds.mrrp.play(), 300);
+              }
+              updateButtonStates();
+
+              setMode(mode);
+              remaining = getDuration(mode);
+              updateDisplay();
+
+              // 🐾 bonus: smooth wake after break
+              if (isBreakMode() && autoStartPomodoros) {
+                setTimeout(() => {
+                  if (soundEnabled) sounds.mrrp.play();
+                  setKittyState("idle");
+                }, 1200);
+              }
             }
-          }
-        }, 1000);
-      }
-
-      function stopTimer() {
-        if (!timer) return;
-
-        clearInterval(timer);
-        timer = null;
-        sleepBtn.disabled = false;
-
-        // 🐾 Mrrp for manual interruption (regardless of mode)
-        if (soundEnabled) sounds.mrrp.play();
-
-        if (!sleeping) setKittyState("idle");
-        updateButtonStates();
-      }
-
-      function resetTimer() {
-        clearInterval(timer);
-        timer = null;
-        remaining = getDuration(mode);
-        updateDisplay();
-        sleepBtn.disabled = false;
-
-        // 🐾 Mrrp on manual reset too
-        if (soundEnabled) sounds.mrrp.play();
-
-        if (!sleeping) setKittyState("idle");
-        updateButtonStates();
-      }
-
-      function toggleSleep() {
-        if (timer) return;
-        sleeping = !sleeping;
-        const g = cats[cat];
-
-        if (sleeping) {
-          if (soundEnabled) sounds.purr.play(); // 😴 entering sleep
-          kitty.classList.remove("kitty-waking");
-          kitty.classList.add("kitty-sleeping");
-
-          const img = new Image();
-          img.src = g.sleep;
-          img.onload = () => {
-            kitty.src = g.sleep;
-            toggleSleepIndicator(true);
-          };
-        } else {
-          if (soundEnabled) sounds.mrrp.play(); // 🐾 gentle normal wake
-          kitty.classList.remove("kitty-sleeping");
-          kitty.classList.add("kitty-waking");
-
-          const img = new Image();
-          img.src = g.idle;
-          img.onload = () => {
-            kitty.src = g.idle;
-            toggleSleepIndicator(false);
-          };
+          }, 1000);
         }
-        updateButtonStates();
-      }
 
-      // --- manage button enable/disable states ---
-      function updateButtonStates() {
-        if (sleeping) {
-          // kitty is asleep — disable stop/reset
-          stopBtn.disabled = true;
-          resetBtn.disabled = true;
-          sleepBtn.disabled = false;
-        } else if (timer) {
-          // timer running — disable sleep
-          stopBtn.disabled = false;
-          resetBtn.disabled = false;
-          sleepBtn.disabled = true;
-        } else {
-          // idle — enable everything
-          stopBtn.disabled = false;
-          resetBtn.disabled = false;
-          sleepBtn.disabled = false;
-        }
-      }
+        function stopTimer() {
+          if (!timer) return;
 
-      // --- bindings ---
-      startBtn.onclick = startTimer;
-      stopBtn.onclick = stopTimer;
-      resetBtn.onclick = resetTimer;
-      sleepBtn.onclick = toggleSleep;
-      modeBtns.forEach((b) => (b.onclick = () => setMode(b.dataset.mode)));
-      // --- updated cat switcher (preserves timer + state) ---
-      // --- updated cat switcher (pauses timer, preserves progress) ---
-      catSelect.onchange = () => {
-        const prevCat = cat;
-        cat = catSelect.value;
-        localStorage.setItem("kitty-cat", cat);
-
-        // remember previous state
-        const wasRunning = !!timer;
-        const wasSleeping = sleeping;
-
-        // pause timer if it was running
-        if (timer) {
           clearInterval(timer);
           timer = null;
-        }
+          sleepBtn.disabled = false;
 
-        // visually reset to idle (but keep remaining time)
-        sleeping = false;
-        sleepBtn.disabled = false;
-        toggleSleepIndicator(false);
-        setKittyState("idle");
+          // 🐾 Mrrp for manual interruption (regardless of mode)
+          if (soundEnabled) sounds.mrrp.play();
 
-        // fade transition between cats
-        kitty.classList.add("kitty-fadeout");
-
-        const g = cats[catSelect.value];
-        const img = new Image();
-        img.src = g.idle;
-        img.onload = () => {
-          kitty.src = g.idle;
-          kitty.classList.remove("kitty-fadeout");
-          kitty.classList.add("kitty-fadein");
-          setTimeout(() => kitty.classList.remove("kitty-fadein"), 450);
-        };
-
-        // show normal "idle" quote (not wake-up)
-        if (soundEnabled) sounds.meow2.play(); // 🐱 chirp when changing cats
-
-        showQuote("normal");
-
-        // re-enable buttons, don’t reset timer or mode
-        updateDisplay();
-      };
-
-      toggleSettings.onclick = () => settingsDiv.classList.toggle("show");
-      // --- new toggle persistence ---
-      autoBreaksToggle.checked = autoStartBreaks;
-      autoPomosToggle.checked = autoStartPomodoros;
-      soundToggle.checked = soundEnabled;
-      notifyToggle.checked = notifyEnabled;
-
-      autoBreaksToggle.onchange = () => {
-        autoStartBreaks = autoBreaksToggle.checked;
-        localStorage.setItem("kitty-auto-breaks", autoStartBreaks);
-      };
-      autoPomosToggle.onchange = () => {
-        autoStartPomodoros = autoPomosToggle.checked;
-        localStorage.setItem("kitty-auto-pomos", autoStartPomodoros);
-      };
-      soundToggle.onchange = () => {
-        soundEnabled = soundToggle.checked;
-        localStorage.setItem("kitty-sound", soundEnabled);
-      };
-      notifyToggle.onchange = () => {
-        notifyEnabled = notifyToggle.checked;
-        localStorage.setItem("kitty-notify", notifyEnabled);
-        if (notifyEnabled && Notification.permission !== "granted")
-          Notification.requestPermission();
-      };
-
-      Object.keys(inputs).forEach((k) => {
-        inputs[k].onchange = () => {
-          localStorage.setItem(`kitty-${k}-dur`, inputs[k].value);
-          if (mode === k) resetTimer();
-        };
-      });
-      Object.keys(inputs).forEach((k) => {
-        const saved = localStorage.getItem(`kitty-${k}-dur`);
-        if (saved) inputs[k].value = saved;
-      });
-      function saveKittyState() {
-        localStorage.setItem(
-          "kitty-state",
-          JSON.stringify({
-            cat,
-            mode,
-            remaining,
-            sleeping,
-          })
-        );
-      }
-
-      // periodically save every 10 seconds
-      setInterval(saveKittyState, 10000);
-      window.addEventListener("beforeunload", saveKittyState);
-
-      // --- restore saved state ---
-      // --- restore saved state (fixed) ---
-      // --- restore saved state (preload-safe) ---
-      window.addEventListener("load", () => {
-        const saved = JSON.parse(localStorage.getItem("kitty-state") || "{}");
-
-        if (saved.cat) cat = saved.cat;
-        if (saved.mode) mode = saved.mode;
-        if (saved.remaining) remaining = saved.remaining;
-        sleeping = saved.sleeping || false;
-
-        catSelect.value = cat; // <— ensures dropdown matches saved cat
-
-        // preload first (fixes flicker)
-        const g = cats[cat];
-        const preload = new Image();
-        preload.src = sleeping ? g.sleep : g.idle;
-        preload.onload = () => {
-          kitty.src = preload.src;
-          if (sleeping) {
-            setKittyState("sleep");
-            toggleSleepIndicator(true);
-          } else {
-            setKittyState("idle");
-            toggleSleepIndicator(false);
-          }
-          setMode(mode);
-          updateDisplay();
+          if (!sleeping) setKittyState("idle");
           updateButtonStates();
+        }
+
+        function resetTimer() {
+          clearInterval(timer);
+          timer = null;
+          remaining = getDuration(mode);
+          updateDisplay();
+          sleepBtn.disabled = false;
+
+          // 🐾 Mrrp on manual reset too
+          if (soundEnabled) sounds.mrrp.play();
+
+          if (!sleeping) setKittyState("idle");
+          updateButtonStates();
+        }
+
+        function toggleSleep() {
+          if (timer) return;
+          sleeping = !sleeping;
+          const g = cats[cat];
+
+          if (sleeping) {
+            if (soundEnabled) sounds.purr.play(); // 😴 entering sleep
+            kitty.classList.remove("kitty-waking");
+            kitty.classList.add("kitty-sleeping");
+
+            const img = new Image();
+            img.src = g.sleep;
+            img.onload = () => {
+              kitty.src = g.sleep;
+              toggleSleepIndicator(true);
+            };
+          } else {
+            if (soundEnabled) sounds.mrrp.play(); // 🐾 gentle normal wake
+            kitty.classList.remove("kitty-sleeping");
+            kitty.classList.add("kitty-waking");
+
+            const img = new Image();
+            img.src = g.idle;
+            img.onload = () => {
+              kitty.src = g.idle;
+              toggleSleepIndicator(false);
+            };
+          }
+          updateButtonStates();
+        }
+
+        // --- manage button enable/disable states ---
+        function updateButtonStates() {
+          if (sleeping) {
+            // kitty is asleep — disable stop/reset
+            stopBtn.disabled = true;
+            resetBtn.disabled = true;
+            sleepBtn.disabled = false;
+          } else if (timer) {
+            // timer running — disable sleep
+            stopBtn.disabled = false;
+            resetBtn.disabled = false;
+            sleepBtn.disabled = true;
+          } else {
+            // idle — enable everything
+            stopBtn.disabled = false;
+            resetBtn.disabled = false;
+            sleepBtn.disabled = false;
+          }
+        }
+
+        // --- bindings ---
+        startBtn.onclick = startTimer;
+        stopBtn.onclick = stopTimer;
+        resetBtn.onclick = resetTimer;
+        sleepBtn.onclick = toggleSleep;
+        // --- updated cat switcher (preserves timer + state) ---
+        // --- updated cat switcher (pauses timer, preserves progress) ---
+        catSelect.onchange = () => {
+    // always stop any running timer completely
+    if (timer) {
+      clearInterval(timer);
+      timer = null;
+    }
+
+    // always reset kitty to idle (visual + logic)
+    sleeping = false;
+    toggleSleepIndicator(false);
+    setKittyState("idle");
+    updateButtonStates();
+
+    // switch cat
+    cat = catSelect.value;
+    localStorage.setItem("kitty-cat", cat);
+
+    // fade transition
+    kitty.classList.add("kitty-fadeout");
+    const g = cats[cat];
+    const img = new Image();
+    img.src = g.idle;
+    img.onload = () => {
+      kitty.src = g.idle;
+      kitty.classList.remove("kitty-fadeout");
+      kitty.classList.add("kitty-fadein");
+      setTimeout(() => kitty.classList.remove("kitty-fadein"), 450);
+    };
+
+    // gentle chirp, no mrrp if sleeping
+    if (soundEnabled) sounds.meow2.play();
+    showQuote("normal");
+
+    // reset to current mode’s full timer
+    remaining = getDuration(mode);
+    updateDisplay();
+  };
+
+
+        // --- new toggle persistence ---
+        autoBreaksToggle.checked = autoStartBreaks;
+        autoPomosToggle.checked = autoStartPomodoros;
+        soundToggle.checked = soundEnabled;
+        notifyToggle.checked = notifyEnabled;
+
+        autoBreaksToggle.onchange = () => {
+          autoStartBreaks = autoBreaksToggle.checked;
+          localStorage.setItem("kitty-auto-breaks", autoStartBreaks);
         };
-      });
-      window.addEventListener("load", () => {
-        const footer = document.querySelector(".credit");
-        setTimeout(() => footer.classList.add("show"), 1800);
-      });
+        autoPomosToggle.onchange = () => {
+          autoStartPomodoros = autoPomosToggle.checked;
+          localStorage.setItem("kitty-auto-pomos", autoStartPomodoros);
+        };
+        soundToggle.onchange = () => {
+          soundEnabled = soundToggle.checked;
+          localStorage.setItem("kitty-sound", soundEnabled);
+        };
+        notifyToggle.onchange = () => {
+          notifyEnabled = notifyToggle.checked;
+          localStorage.setItem("kitty-notify", notifyEnabled);
+          if (notifyEnabled && Notification.permission !== "granted")
+            Notification.requestPermission();
+        };
 
-      // --- only set defaults if no saved state exists ---
-      if (!localStorage.getItem("kitty-state")) {
-        setMode(mode);
-        remaining = getDuration(mode);
-        updateDisplay();
-        setKittyState("idle");
-      }
-
-      // --- RyokoCraft Splash Pool ---
-      const affirmations = [
-        "Respawning creativity...",
-        "Crafting excuses... failed.",
-        "You can't out-grind entropy, but you can vibe with it.",
-        "Inventory full of half-finished projects.",
-        "Achievement unlocked: emotionally available.",
-        "No I really WAS listening- I just have... 3000 ping. Sorry- what were you saying again?",
-        "Biome: Burnout Plains.",
-        "Fell from high expectations.",
-        "New recipe unlocked: coping mechanisms.",
-        "Achievement get! Bare minimum.",
-        "Permanent night mode engaged for deadlines.",
-        "/teleport @self to bed",
-        "Enderkitty watches you craft self-worth.",
-        "Press F to focus.",
-        "Unstable connection to motivation server. Please consult API keys.",
-        "Respawn point set at your desk.",
-        "lockinlockinlockinlockinlockinlockinlockinlockin(shut the FUUUU-)lockinlockinlockinlockin",
-        "Sex is just biology and hormones. Emotions aren't inherently related to sex. Yeah Rebecca and I fell off a three storey building and broke my ass. Just nociceptors, though.",
-        "I just sold a course on how to sell a course to course sellers.",
-
-        // Pantheon Expansion
-        "John Ambrose clapped twice for the waiter and his date left.",
-        "John Ambrose discovered discomfort and called it chaos.",
-        "Becca McLimbic just discovered 'attachment styles' and is now diagnosing everyone at brunch.",
-        "Becca said 'healing era' but meant 'Instagram carousel phase.'",
-        "Kyle Denial explained evo psych to a woman holding a PhD in evolutionary biology.",
-        "Kyle Denial thinks trauma is an excuse until his crypto dips.",
-        "Karen McLaren fixed a carburetor and went home. That’s it. That’s the tweet.",
-        "Karen McLaren believes in torque, not talk.",
-        "Woo Woo-Hyun says your chronic illness is just 'blocked chakras' and also here's her OnlyFans.",
-        "The kitty believes in your potential and is watching 👁👁",
-        "Woo Woo-Hyun blamed mercury retrograde for tax fraud.",
-        "Chadwick Ambrose successfully seduced a TED Talk.",
-        "Becca McLimbic fell into the void (emotionally).",
-        "John Ambrose tried mindfulness once. It bit him.",
-        "Kyle Denial entered a debate and left with a hernia.",
-        "Woo Woo-Hyun manifested engagement — on her post, not her relationship.",
-        "Karen McLaren welded inner peace.",
-        "John Ambrose claps twice for intimacy and wonders why she left.",
-        "Becca McLimbic cried to Taylor Swift and called it shadow work.",
-        "Kyle Denial’s testosterone levels have entered the chat.",
-        "Woo Woo-Hyun bought sage from Amazon.",
-        "Karen McLaren speedran enlightenment with a wrench.",
-        "Chadwick Ambrose spawned in the VIP section.",
-        "Server overloaded with main-character energy.",
-        "Achievement get! Emotional regulation (rare).",
-        "Biome updated: Covert Narcissist Nest.",
-        "Reality patched: Gaslighting nerfed.",
-        "New mob spawned: Inner Child (Level 99, passive-aggressive).",
-        "Limbic loop detected. Apply grounding.",
-        "Enderkitty ponders your executive dysfunction.",
-        "You feel watched. It’s just accountability.",
-        "Autosaving nervous system state...",
-        "Processing trauma shaders...",
-        "Achievement unlocked: didn’t text them back.",
-        "Warning: empathy overflow detected.",
-        "Your productivity mod crashed from too much introspection.",
-        "Quest updated: Survive capitalism, stay cute.",
-        "Autosave complete. Kitty purring.",
-      ];
-
-      let recentAffirmations = new Set();
-
-      // choose unique affirmation with stronger rotation
-      function chooseUniqueAffirmation() {
-        const unused = affirmations.filter((a) => !recentAffirmations.has(a));
-
-        // If all have been seen, reset the memory except last 5 to avoid immediate repeats
-        if (unused.length === 0) {
-          const temp = Array.from(recentAffirmations).slice(-5);
-          recentAffirmations = new Set(temp);
-        }
-
-        const pool = unused.length ? unused : affirmations;
-        const chosen = pool[Math.floor(Math.random() * pool.length)];
-
-        // record new one
-        recentAffirmations.add(chosen);
-        if (recentAffirmations.size > Math.floor(affirmations.length * 0.6)) {
-          // keep memory roughly at 60% of pool size for strong anti-repeat protection
-          const trimmed = Array.from(recentAffirmations).slice(
-            -Math.floor(affirmations.length * 0.6)
+        Object.keys(inputs).forEach((k) => {
+          inputs[k].onchange = () => {
+            localStorage.setItem(`kitty-${k}-dur`, inputs[k].value);
+            if (mode === k) resetTimer();
+          };
+        });
+        Object.keys(inputs).forEach((k) => {
+          const saved = localStorage.getItem(`kitty-${k}-dur`);
+          if (saved) inputs[k].value = saved;
+        });
+        function saveKittyState() {
+          localStorage.setItem(
+            "kitty-state",
+            JSON.stringify({
+              cat,
+              mode,
+              remaining,
+              sleeping,
+            })
           );
-          recentAffirmations = new Set(trimmed);
         }
 
-        return chosen;
-      }
+        // periodically save every 10 seconds
+        setInterval(saveKittyState, 10000);
+        window.addEventListener("beforeunload", saveKittyState);
 
-      // assign one on load
-      window.addEventListener("load", () => {
-        const affirmEl = document.querySelector(".affirmation");
-        affirmEl.textContent = chooseUniqueAffirmation();
-      });
-      updateButtonStates();
-    </script>
-  </body>
-</html>
+        // --- restore saved state ---
+        // --- restore saved state (fixed) ---
+        // --- restore saved state (preload-safe) ---
+        window.addEventListener("load", () => {
+          const saved = JSON.parse(localStorage.getItem("kitty-state") || "{}");
+
+          if (saved.cat) cat = saved.cat;
+          if (saved.mode) mode = saved.mode;
+          if (saved.remaining) remaining = saved.remaining;
+          sleeping = saved.sleeping || false;
+
+          catSelect.value = cat; // <— ensures dropdown matches saved cat
+
+          // preload first (fixes flicker)
+          const g = cats[cat];
+          const preload = new Image();
+          preload.src = sleeping ? g.sleep : g.idle;
+          preload.onload = () => {
+            kitty.src = preload.src;
+            if (sleeping) {
+              setKittyState("sleep");
+              toggleSleepIndicator(true);
+            } else {
+              setKittyState("idle");
+              toggleSleepIndicator(false);
+            }
+            setMode(mode);
+            updateDisplay();
+            updateButtonStates();
+          };
+        });
+        window.addEventListener("load", () => {
+          const footer = document.querySelector(".credit");
+          setTimeout(() => footer.classList.add("show"), 1800);
+        });
+
+        // --- only set defaults if no saved state exists ---
+        if (!localStorage.getItem("kitty-state")) {
+          setMode(mode);
+          remaining = getDuration(mode);
+          updateDisplay();
+          setKittyState("idle");
+        }
+
+        // --- RyokoCraft Splash Pool ---
+        const affirmations = [
+          "Respawning creativity...",
+          "Crafting excuses... failed.",
+          "You can't out-grind entropy, but you can vibe with it.",
+          "Inventory full of half-finished projects.",
+          "Achievement unlocked: emotionally available.",
+          "No I really WAS listening- I just have... 3000 ping. Sorry- what were you saying again?",
+          "Biome: Burnout Plains.",
+          "Fell from high expectations.",
+          "New recipe unlocked: coping mechanisms.",
+          "Achievement get! Bare minimum.",
+          "Permanent night mode engaged for deadlines.",
+          "/teleport @self to bed",
+          "Enderkitty watches you craft self-worth.",
+          "Press F to focus.",
+          "Unstable connection to motivation server. Please consult API keys.",
+          "Respawn point set at your desk.",
+          "lockinlockinlockinlockinlockinlockinlockinlockin(shut the FUUUU-)lockinlockinlockinlockin",
+          "Sex is just biology and hormones. Emotions aren't inherently related to sex. Yeah Rebecca and I fell off a three storey building and broke my ass. Just nociceptors, though.",
+          "I just sold a course on how to sell a course to course sellers.",
+
+          // Pantheon Expansion
+          "John Ambrose clapped twice for the waiter and his date left.",
+          "John Ambrose discovered discomfort and called it chaos.",
+          "Becca McLimbic just discovered 'attachment styles' and is now diagnosing everyone at brunch.",
+          "Becca said 'healing era' but meant 'Instagram carousel phase.'",
+          "Kyle Denial explained evo psych to a woman holding a PhD in evolutionary biology.",
+          "Kyle Denial thinks trauma is an excuse until his crypto dips.",
+          "Karen McLaren fixed a carburetor and went home. That’s it. That’s the tweet.",
+          "Karen McLaren believes in torque, not talk.",
+          "Woo Woo-Hyun says your chronic illness is just 'blocked chakras' and also here's her OnlyFans.",
+          "The kitty believes in your potential and is watching 👁👁",
+          "Woo Woo-Hyun blamed mercury retrograde for tax fraud.",
+          "Chadwick Ambrose successfully seduced a TED Talk.",
+          "Becca McLimbic fell into the void (emotionally).",
+          "John Ambrose tried mindfulness once. It bit him.",
+          "Kyle Denial entered a debate and left with a hernia.",
+          "Woo Woo-Hyun manifested engagement — on her post, not her relationship.",
+          "Karen McLaren welded inner peace.",
+          "John Ambrose claps twice for intimacy and wonders why she left.",
+          "Becca McLimbic cried to Taylor Swift and called it shadow work.",
+          "Kyle Denial’s testosterone levels have entered the chat.",
+          "Woo Woo-Hyun bought sage from Amazon.",
+          "Karen McLaren speedran enlightenment with a wrench.",
+          "Chadwick Ambrose spawned in the VIP section.",
+          "Server overloaded with main-character energy.",
+          "Achievement get! Emotional regulation (rare).",
+          "Biome updated: Covert Narcissist Nest.",
+          "Reality patched: Gaslighting nerfed.",
+          "New mob spawned: Inner Child (Level 99, passive-aggressive).",
+          "Limbic loop detected. Apply grounding.",
+          "Enderkitty ponders your executive dysfunction.",
+          "You feel watched. It’s just accountability.",
+          "Autosaving nervous system state...",
+          "Processing trauma shaders...",
+          "Achievement unlocked: didn’t text them back.",
+          "Warning: empathy overflow detected.",
+          "Your productivity mod crashed from too much introspection.",
+          "Quest updated: Survive capitalism, stay cute.",
+          "Autosave complete. Kitty purring.",
+        ];
+
+        let recentAffirmations = new Set();
+
+        // choose unique affirmation with stronger rotation
+        function chooseUniqueAffirmation() {
+          const unused = affirmations.filter((a) => !recentAffirmations.has(a));
+
+          // If all have been seen, reset the memory except last 5 to avoid immediate repeats
+          if (unused.length === 0) {
+            const temp = Array.from(recentAffirmations).slice(-5);
+            recentAffirmations = new Set(temp);
+          }
+
+          const pool = unused.length ? unused : affirmations;
+          const chosen = pool[Math.floor(Math.random() * pool.length)];
+
+          // record new one
+          recentAffirmations.add(chosen);
+          if (recentAffirmations.size > Math.floor(affirmations.length * 0.6)) {
+            // keep memory roughly at 60% of pool size for strong anti-repeat protection
+            const trimmed = Array.from(recentAffirmations).slice(
+              -Math.floor(affirmations.length * 0.6)
+            );
+            recentAffirmations = new Set(trimmed);
+          }
+
+          return chosen;
+        }
+
+        // assign one on load
+        window.addEventListener("load", () => {
+          const affirmEl = document.querySelector(".affirmation");
+          affirmEl.textContent = chooseUniqueAffirmation();
+        });
+        updateButtonStates();
+      </script>
+    </body>
+  </html>
